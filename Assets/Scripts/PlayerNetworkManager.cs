@@ -5,21 +5,15 @@ using System.Collections.Generic;
 
 public class PlayerNetworkManager : MonoBehaviour
 {
-    public string Host
-    {
-        get
-        {
-            return NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.ListenEndPoint.Address;
-        }
-    }
-
     public ushort Port
     {
         get
         {
-            return NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.ListenEndPoint.Port;
+            return NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.Port;
         }
     }
+
+    public NetworkManager UNM => NetworkManager.Singleton;
 
     // Start is called before the first frame update
     void Start()
@@ -30,21 +24,32 @@ public class PlayerNetworkManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    void Connect(List<PlayerAuthManager.PlayerAuth> clients)
+    public enum NetworkState
     {
-        if(clients.Count == 0) 
+        HOST,
+        CLIENT
+    }
+
+    public NetworkState Connect(PlayerAuthManager.PlayerAuth hostClient)
+    {
+        if(hostClient == null)
         {
             NetworkManager.Singleton.StartHost();
+            Debug.Log("Started server");
+
+            return NetworkState.HOST;
         }
         else
         {
-            var hostClient = clients[0];
-
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(hostClient.host, hostClient.port);
             NetworkManager.Singleton.StartClient();
+
+            Debug.Log("Started client");
+
+            return NetworkState.CLIENT;
         }
     }
 }
