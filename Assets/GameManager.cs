@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     public GameObject Player1Text;
     public GameObject Player2Text;
 
+    public int scoreLimit = 5;
+
     private int Player1Score;
     private int Player2Score;
 
@@ -27,14 +29,28 @@ public class GameManager : MonoBehaviour
     {
         Player1Score++;
         Player1Text.GetComponent<TextMeshProUGUI>().text = Player1Score.ToString();
-        ResetPosition();
+        if (Player1Score >= scoreLimit)
+        {
+            EndGame("Player 1");
+        }
+        else
+        {
+            ResetPosition();
+        }
     }
 
     public void Player2Scored()
     {
         Player2Score++;
         Player2Text.GetComponent<TextMeshProUGUI>().text = Player2Score.ToString();
-        ResetPosition();
+        if (Player2Score >= scoreLimit)
+        {
+            EndGame("Player 2");
+        }
+        else
+        {
+            ResetPosition();
+        }
     }
 
     private void ResetPosition()
@@ -42,5 +58,10 @@ public class GameManager : MonoBehaviour
         ball.GetComponent<Ball>().Reset();
         player1Paddle.GetComponent<Paddle>().Reset();
         player2Paddle.GetComponent<Paddle>().Reset();
+    }
+
+    private void EndGame(string winner)
+    {
+        Debug.Log(winner + " wins the game!");
     }
 }
