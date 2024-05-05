@@ -285,6 +285,7 @@ MonoBehaviour:
   player2Goal: {fileID: 1376289386}
   Player1Text: {fileID: 1590240975}
   Player2Text: {fileID: 1799365874}
+  scoreLimit: 5
 --- !u!4 &530272447
 Transform:
   m_ObjectHideFlags: 0
