@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 26
-  productGUID: 0d8013135129a447f8731a1699a3d277
+  productGUID: 65cea584108f04752a0b0ca442820423
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Hangman
+  productName: HangmanGame
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -629,14 +629,14 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Hangman
+  metroPackageName: HangmanGame
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: Hangman
+  metroApplicationDescription: HangmanGame
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -704,10 +704,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 91cb5e0e-f694-4164-9cdb-a4c21cf13510
+  cloudProjectId: a38de6a3-cb64-4d9d-91f0-7186373305ca
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Hangman 2024-05-03_15-33-36
+  projectName: HangmanGame
   organizationId: jeromejosephh
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

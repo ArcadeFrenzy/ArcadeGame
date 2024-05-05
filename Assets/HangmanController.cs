@@ -40,7 +40,7 @@ public class HangmanController : MonoBehaviour
         {
             child.interactable = true;
         }
-        foreach(Transform child in wordBox.GetComponentsInChildren<Transform>())
+        foreach(Transform child in wordBox.GetComponentInChildren<Transform>())
         {
             Destroy(child.gameObject);
         }
