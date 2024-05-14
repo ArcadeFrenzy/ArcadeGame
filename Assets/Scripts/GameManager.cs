@@ -19,12 +19,15 @@ public class GameManager : MonoBehaviour
     Color RED_COLOR = new Color(231, 29, 54, 255) / 255;
     Color YELLOW_COLOR = new Color(162, 255, 0, 255) / 255;
 
+    Board myBoard;
+
     private void Awake()
     {
         isPlayer = true;
         hasGameFinished = false;
         turnMessage.text = RED_MESSAGE;
         turnMessage.color = RED_COLOR;
+        myBoard = new Board();
     }
 
 
@@ -59,7 +62,7 @@ public class GameManager : MonoBehaviour
             if (hit.collider.CompareTag("Press"))
             {
                 //Check out of bounds
-                if(hit.collider.gameObject.GetComponent<Column>().targetLocation.y > 5f) return;
+                if(hit.collider.gameObject.GetComponent<Column>().targetLocation.y > 4f) return;
 
                 //Spawn the Gameobject
                 Vector3 spawnPos = hit.collider.gameObject.GetComponent<Column>().spawnLocation;
@@ -69,9 +72,16 @@ public class GameManager : MonoBehaviour
                 circle.GetComponent<Mover>().targetPosition = targetPos;
 
                 //Increase the target location height
-                hit.collider.gameObject.GetComponent<Column>().targetLocation = new Vector3(targetPos.x, targetPos.y + 1f, targetPos.z);
+                hit.collider.gameObject.GetComponent<Column>().targetLocation = new Vector3(targetPos.x, targetPos.y + 0.94f, targetPos.z);
 
                 //UpdateBoard
+                myBoard.UpdateBoard(hit.collider.gameObject.GetComponent<Column>().col - 1, isPlayer);
+                if (myBoard.Result(isPlayer))
+                {
+                    turnMessage.text = (isPlayer ? "Red" : "Green") + " Wins!";
+                    hasGameFinished = true;
+                    return;
+                }
 
                 //TurnMessage
                 turnMessage.text = !isPlayer ? RED_MESSAGE : YELLOW_MESSAGE;
