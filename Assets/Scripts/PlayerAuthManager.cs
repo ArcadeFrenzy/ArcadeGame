@@ -1,10 +1,7 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections;
+using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
 
 public class PlayerAuthManager : MonoBehaviour
 {
@@ -34,42 +31,23 @@ public class PlayerAuthManager : MonoBehaviour
 
     public void Login()
     {
-        StartCoroutine(SubmitLoginRequest());
-    }
+        // Set username
+        PlayerNetworkManager.Username = UsernameInputField.text;
 
-    public class ConnectionRequest
-    {
-        public bool Success = false;
-    }
-
-    IEnumerator SubmitLoginRequest()
-    {
-        var str = new JObject(new JProperty("username", UsernameInputField.text)).ToString(Formatting.None);
-        Debug.Log(str);
-
-        using (UnityWebRequest www = UnityWebRequest.Post($"http://{BACKEND_IP}:{BACKEND_PORT}/auth", str, "application/json"))
+        NetworkManager.QueryGames((lobbies) => // on success
         {
-            yield return www.SendWebRequest();
+            PlayerNetworkManager.GameLobby lobby = lobbies.FirstOrDefault();
 
-            switch(www.result)
+            NetworkManager.TryConnect(lobby?.ConnInfo, () => // on success
             {
-                case UnityWebRequest.Result.Success:
-                    {
-                        //Debug.Log($"Success {www.downloadHandler.text}");
-
-                        ConnectionRequest connectionRequest = new ConnectionRequest();
-                        yield return NetworkManager.Connect(connectionRequest, UsernameInputField.text);
-
-                        LoginCanvasObj.SetActive(!connectionRequest.Success);
-
-                        break;
-                    }
-                default:
-                    {
-                        Debug.LogError("Failed to connect.");
-                        break;
-                    }
-            }
-        }
+                LoginCanvasObj.SetActive(false);
+            }, () => // on error
+            {
+                // Failed
+            });
+        }, () => // on error
+        {
+            // Failed.
+        });
     }
 }

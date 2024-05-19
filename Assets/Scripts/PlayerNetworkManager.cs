@@ -5,9 +5,16 @@ using UnityEngine;
 using static PlayerAuthManager;
 using UnityEngine.Networking;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class PlayerNetworkManager : NetworkManager
 {
+    public static string Username = "";
+    private NetworkManagerConnectionInfo currentConnInfo = null;
+
     public ushort Port
     {
         get
@@ -22,109 +29,212 @@ public class PlayerNetworkManager : NetworkManager
         CLIENT
     }
 
-    public static string Username;
-
-    public NetworkState Connect(PlayerAuthManager.PlayerAuth hostClient, string username)
+    public class ConnectionInfo
     {
-        Username = username;
+        public string Host;
+        public ushort Port;
 
-        if(hostClient == null)
+        public ConnectionInfo(string host, ushort port)
         {
-            NetworkManager.singleton.StartHost();
-            Debug.Log("Started server");
+            this.Host = host;
+            this.Port = port;
+        }
+    }
 
-            return NetworkState.HOST;
+    private class NetworkManagerConnectionInfo
+    {
+        public ConnectionInfo ConnectionInfo;
+        public Action OnConnect;
+
+        public bool Connected = false;
+        public bool Host = false;
+
+        public NetworkManagerConnectionInfo(ConnectionInfo connectionInfo, Action onSuccess)
+        {
+            this.ConnectionInfo = connectionInfo;
+            this.OnConnect = onSuccess;
+        }
+    }
+
+    public override void OnClientConnect()
+    {
+        base.OnClientConnect();
+
+        currentConnInfo.Connected = true;
+
+        if (currentConnInfo.OnConnect != null)
+        {
+            currentConnInfo.OnConnect();
+        }
+    }
+
+    public override void OnClientDisconnect() // If the client loses connection, continue hosting.
+    {
+        if(currentConnInfo == null)
+        {
+            return;
+        }
+
+        if (!currentConnInfo.Connected)
+        {
+            Debug.Log("Failed to connect, hosting.");
+            this.Host();
         }
         else
         {
-            NetworkManager.singleton.networkAddress = hostClient.host;
-            ((KcpTransport)this.transport).port = hostClient.port;
-            this.StartClient();
-            Debug.Log($"Started client {hostClient.host} {hostClient.port}");
-
-            return NetworkState.CLIENT;
+            Debug.LogError("TODO: Try reconnect.");
+            this.Host();
         }
     }
 
-    public override void OnClientDisconnect()
+    // Networking API
+
+    public void TryConnect(ConnectionInfo info, Action onSuccess, Action onFailure)
     {
-        StartCoroutine(this.Host(null));
+        if (info != null)
+        {
+            if (currentConnInfo != null && currentConnInfo.Connected)
+            {
+                // TODO: Check if connected, disconnect if needed
+            }
+
+            currentConnInfo = new NetworkManagerConnectionInfo(info, onSuccess);
+
+            this.networkAddress = info.Host;
+            ((KcpTransport)this.transport).port = info.Port;
+
+            this.StartClient();
+            Debug.Log($"Started client {info.Host} {info.Port}");
+        }
+        else
+        {
+            currentConnInfo = new NetworkManagerConnectionInfo(new ConnectionInfo("", this.Port), onSuccess);
+            currentConnInfo.Host = true;
+
+            this.Host();
+        }
     }
 
-    IEnumerator Host(PlayerAuth hostClient)
+    public void Host()
     {
-        if(this.isNetworkActive)
+        if (this.isNetworkActive)
         {
             // If we are still connected as a client, wait until the cleanup process is finished.
-            yield return null;
+            if (this.currentConnInfo != null)
+            {
+                if (this.currentConnInfo.Host)
+                {
+                    this.StopHost();
+                }
+                else
+                {
+                    this.StopClient();
+                }
+
+                Task.Run(() =>
+                {
+                    Task.Delay(3000);
+                    this.Host();
+                });
+            }
+
+            return;
         }
 
-        var str = JsonUtility.ToJson(new PlayerAuth()
+        GameLobby lobby = new GameLobby(new ConnectionInfo("", this.Port), SceneManager.GetActiveScene().name, 1);
+        var str = JsonConvert.SerializeObject(lobby, Formatting.None);
+
+        StartCoroutine(SendWebRequest("host", (jsonStr) =>
         {
-            host = "",
-            port = this.Port,
-            username = Username,
-        }, false);
-
-        switch (this.Connect(hostClient, Username))
+            Debug.Log("Registered with backend as host.");
+            this.StartHost();
+        }, () =>
         {
-            case PlayerNetworkManager.NetworkState.HOST:
-                {
-                    // We are the host.
+            Debug.LogError("Failed to register with backend as host.");
+        }, str));
+    }
 
-                    using (UnityWebRequest www2 = UnityWebRequest.Post($"http://{BACKEND_IP}:{BACKEND_PORT}/host", str, "application/json"))
-                    {
-                        yield return www2.SendWebRequest();
+    public class GameLobby
+    {
+        public ConnectionInfo ConnInfo;
 
-                        switch (www2.result)
-                        {
-                            case UnityWebRequest.Result.Success:
-                                {
-                                    Debug.Log("Registered with backend as host.");
-                                    break;
-                                }
-                            default:
-                                {
-                                    Debug.LogError("Failed to register with backend as host.");
-                                    break;
-                                }
-                        }
-                    }
-                    break;
-                }
-            case PlayerNetworkManager.NetworkState.CLIENT:
-                {
-                    // Do nothing, we connected to the server.
-                    break;
-                }
+        public string SceneName;
+        public int PlayerCount;
+
+        public GameLobby(ConnectionInfo connectionInfo, string sceneName, int playerCount)
+        {
+            this.ConnInfo = connectionInfo;
+            this.SceneName = sceneName;
+            this.PlayerCount = playerCount;
         }
     }
 
-    public IEnumerator Connect(ConnectionRequest connectionRequest, string username)
+    public void QueryGames(Action<List<GameLobby>> onComplete, Action onError)
     {
-        Username = username;
+        QueryGames(SceneManager.GetActiveScene().name, onComplete, onError);
+    }
 
-        using (UnityWebRequest www = UnityWebRequest.Get($"http://{BACKEND_IP}:{BACKEND_PORT}/connect"))
+    public void QueryGames(string sceneName, Action<List<GameLobby>> onComplete, Action onError)
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        StartCoroutine(SendWebRequest($"games?scene={sceneName}", (jsonStr) =>
         {
-            yield return www.SendWebRequest();
+            List<GameLobby> lobbies = JsonConvert.DeserializeObject<List<GameLobby>>(jsonStr);
 
-            switch (www.result)
-            {
-                case UnityWebRequest.Result.Success:
-                    {
-                        PlayerAuth hostClient = JsonConvert.DeserializeObject<PlayerAuth>(www.downloadHandler.text);
+            onComplete(lobbies);
+        }, onError));
+    }
 
-                        yield return Host(hostClient);
+    public enum WebRequestType
+    {
+        Get,
+        Post
+    }
 
-                        connectionRequest.Success = true;
-                        break;
-                    }
-                default:
-                    {
-                        // Failed to connect.
-                        break;
-                    }
-            }
+    private IEnumerator SendWebRequest(string endpoint, Action<string> onSuccess, Action onError)
+    {
+        Debug.Log("Bap");
+        yield return SendWebRequest(WebRequestType.Get, $"http://{BACKEND_IP}:{BACKEND_PORT}", endpoint, onSuccess, onError, null);
+    }
+
+    private IEnumerator SendWebRequest(string endpoint, Action<string> onSuccess, Action onError, string jsonStr)
+    {
+        Debug.Log("Bop");
+        yield return SendWebRequest(WebRequestType.Post, $"http://{BACKEND_IP}:{BACKEND_PORT}", endpoint, onSuccess, onError, jsonStr);
+    }
+
+    private IEnumerator SendWebRequest(WebRequestType type, string url, string endpoint, Action<string> onSuccess, Action onError, string jsonStr)
+    {
+        string fullUrl = $"{url}/{endpoint}";
+        UnityWebRequest www = null;
+
+        if(type == WebRequestType.Get)
+        {
+            www = UnityWebRequest.Get(fullUrl);
+        }
+        else if(type == WebRequestType.Post)
+        {
+            www = UnityWebRequest.Post(fullUrl, jsonStr, "application/json");
+        }
+
+        // Send request
+        yield return www.SendWebRequest();
+
+        // Attempt to handle response depending on initial state of request
+        switch (www.result)
+        {
+            case UnityWebRequest.Result.Success:
+                {
+                    onSuccess(www.downloadHandler.text);
+                    break;
+                }
+
+            default:
+                {
+                    onError();
+                    break;
+                }
         }
     }
 }
