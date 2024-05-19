@@ -21,11 +21,11 @@ public class PlayerAuthManager : MonoBehaviour
     public GameObject LoginCanvasObj;
     public TMP_InputField UsernameInputField;
 
-    public PlayerNetworkManager NetworkManager
+    public GameNetworkManager NetworkManager
     {
         get
         {
-            return NetworkManagerObj.GetComponent<PlayerNetworkManager>();
+            return NetworkManagerObj.GetComponent<GameNetworkManager>();
         }
     }
 
@@ -34,17 +34,9 @@ public class PlayerAuthManager : MonoBehaviour
         // Set username
         PlayerNetworkManager.Username = UsernameInputField.text;
 
-        NetworkManager.QueryGames((lobbies) => // on success
+        NetworkManager.QueryAndConnect(() => // on success
         {
-            PlayerNetworkManager.GameLobby lobby = lobbies.FirstOrDefault();
-
-            NetworkManager.TryConnect(lobby?.ConnInfo, () => // on success
-            {
-                LoginCanvasObj.SetActive(false);
-            }, () => // on error
-            {
-                // Failed
-            });
+            LoginCanvasObj.SetActive(false);
         }, () => // on error
         {
             // Failed.

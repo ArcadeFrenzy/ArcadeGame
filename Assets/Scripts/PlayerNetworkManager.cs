@@ -43,15 +43,15 @@ public class PlayerNetworkManager : NetworkManager
 
     private class NetworkManagerConnectionInfo
     {
-        public ConnectionInfo ConnectionInfo;
-        public Action OnConnect;
+        public GameLobby GameLobby;
+        public Action<GameLobby> OnConnect;
 
         public bool Connected = false;
         public bool Host = false;
 
-        public NetworkManagerConnectionInfo(ConnectionInfo connectionInfo, Action onSuccess)
+        public NetworkManagerConnectionInfo(GameLobby gameLobby, Action<GameLobby> onSuccess)
         {
-            this.ConnectionInfo = connectionInfo;
+            this.GameLobby = gameLobby;
             this.OnConnect = onSuccess;
         }
     }
@@ -64,7 +64,7 @@ public class PlayerNetworkManager : NetworkManager
 
         if (currentConnInfo.OnConnect != null)
         {
-            currentConnInfo.OnConnect();
+            currentConnInfo.OnConnect(currentConnInfo.GameLobby);
         }
     }
 
@@ -89,8 +89,10 @@ public class PlayerNetworkManager : NetworkManager
 
     // Networking API
 
-    public void TryConnect(ConnectionInfo info, Action onSuccess, Action onFailure)
+    public void TryConnect(GameLobby lobby, Action<GameLobby> onSuccess, Action onFailure)
     {
+        ConnectionInfo info = lobby?.ConnInfo;
+
         if (info != null)
         {
             if (currentConnInfo != null && currentConnInfo.Connected)
@@ -98,7 +100,7 @@ public class PlayerNetworkManager : NetworkManager
                 // TODO: Check if connected, disconnect if needed
             }
 
-            currentConnInfo = new NetworkManagerConnectionInfo(info, onSuccess);
+            currentConnInfo = new NetworkManagerConnectionInfo(lobby, onSuccess);
 
             this.networkAddress = info.Host;
             ((KcpTransport)this.transport).port = info.Port;
@@ -108,7 +110,7 @@ public class PlayerNetworkManager : NetworkManager
         }
         else
         {
-            currentConnInfo = new NetworkManagerConnectionInfo(new ConnectionInfo("", this.Port), onSuccess);
+            currentConnInfo = new NetworkManagerConnectionInfo(new GameLobby(new ConnectionInfo("", this.Port), SceneManager.GetActiveScene().name, null, 1), onSuccess);
             currentConnInfo.Host = true;
 
             this.Host();
@@ -141,12 +143,13 @@ public class PlayerNetworkManager : NetworkManager
             return;
         }
 
-        GameLobby lobby = new GameLobby(new ConnectionInfo("", this.Port), SceneManager.GetActiveScene().name, 1);
-        var str = JsonConvert.SerializeObject(lobby, Formatting.None);
+        var str = JsonConvert.SerializeObject(this.currentConnInfo.GameLobby, Formatting.None);
 
         StartCoroutine(SendWebRequest("host", (jsonStr) =>
         {
-            Debug.Log("Registered with backend as host.");
+            Debug.Log("Registered with backend as host. " + jsonStr);
+
+            currentConnInfo.GameLobby.InstanceId = jsonStr.Replace("\"", "");
             this.StartHost();
         }, () =>
         {
@@ -159,12 +162,15 @@ public class PlayerNetworkManager : NetworkManager
         public ConnectionInfo ConnInfo;
 
         public string SceneName;
+        public string InstanceId;
+
         public int PlayerCount;
 
-        public GameLobby(ConnectionInfo connectionInfo, string sceneName, int playerCount)
+        public GameLobby(ConnectionInfo connectionInfo, string sceneName, string instanceId, int playerCount)
         {
             this.ConnInfo = connectionInfo;
             this.SceneName = sceneName;
+            this.InstanceId = instanceId;
             this.PlayerCount = playerCount;
         }
     }
