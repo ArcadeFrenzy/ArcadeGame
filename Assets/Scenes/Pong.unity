@@ -315,10 +315,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shared: 0
-  gameInstanceId: 
+  instanceId: 
   waitForPlayerCount: 2
-  backendIp: 127.0.0.1
-  backendPort: 5000
+  connectOnStart: 1
+  NetworkManagerObj: {fileID: 588735911759461044, guid: 3b2774ae8c1e05e498d4ea8cf9816253, type: 3}
 --- !u!1 &577011103
 GameObject:
   m_ObjectHideFlags: 0

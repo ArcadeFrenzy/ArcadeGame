@@ -10,6 +10,7 @@ public class GameNetworkManager : MonoBehaviour
 
     public bool connectOnStart = false;
 
+    public GameObject DefaultNetworkManagerObj;
     public GameObject NetworkManagerObj;
 
     public PlayerNetworkManager NetworkManager
@@ -25,13 +26,31 @@ public class GameNetworkManager : MonoBehaviour
     {
         if(connectOnStart)
         {
-            this.QueryAndConnect(() => // on success
+            if(NetworkManager == null || !NetworkManager.isActiveAndEnabled)
             {
+                NetworkManagerObj = Instantiate(DefaultNetworkManagerObj);
+            }
 
-            }, () => // on error
+            if (string.IsNullOrEmpty(this.instanceId))
             {
+                this.QueryAndConnect(() => // on success
+                {
 
-            });
+                }, () => // on error
+                {
+
+                });
+            }
+            else
+            {
+                this.Connect((lobby) => // on success
+                {
+
+                }, () => // on error
+                {
+
+                });
+            }
         }
     }
 
@@ -62,6 +81,14 @@ public class GameNetworkManager : MonoBehaviour
 
                 onSuccess();
             }, onError);
+        }, onError);
+    }
+
+    public void Connect(Action<PlayerNetworkManager.GameLobby> onSuccess, Action onError)
+    {
+        NetworkManager.QueryGame(this.instanceId, (lobby) => // on success
+        {
+            NetworkManager.TryConnect(lobby, onSuccess, onError);
         }, onError);
     }
 }

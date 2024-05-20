@@ -98,6 +98,7 @@ public class PlayerNetworkManager : NetworkManager
             if (currentConnInfo != null && currentConnInfo.Connected)
             {
                 // TODO: Check if connected, disconnect if needed
+                Debug.LogError("TODO: Disconnect.");
             }
 
             currentConnInfo = new NetworkManagerConnectionInfo(lobby, onSuccess);
@@ -145,7 +146,7 @@ public class PlayerNetworkManager : NetworkManager
 
         var str = JsonConvert.SerializeObject(this.currentConnInfo.GameLobby, Formatting.None);
 
-        StartCoroutine(SendWebRequest("host", (jsonStr) =>
+        SendWebRequest("host", (jsonStr) =>
         {
             Debug.Log("Registered with backend as host. " + jsonStr);
 
@@ -154,7 +155,7 @@ public class PlayerNetworkManager : NetworkManager
         }, () =>
         {
             Debug.LogError("Failed to register with backend as host.");
-        }, str));
+        }, str);
     }
 
     public class GameLobby
@@ -184,12 +185,22 @@ public class PlayerNetworkManager : NetworkManager
     {
         string currentScene = SceneManager.GetActiveScene().name;
 
-        StartCoroutine(SendWebRequest($"games?scene={sceneName}", (jsonStr) =>
+        SendWebRequest($"games?scene={sceneName}", (jsonStr) =>
         {
             List<GameLobby> lobbies = JsonConvert.DeserializeObject<List<GameLobby>>(jsonStr);
 
             onComplete(lobbies);
-        }, onError));
+        }, onError);
+    }
+
+    public void QueryGame(string instanceId, Action<GameLobby> onComplete, Action onError)
+    {
+        SendWebRequest($"game?instanceId={instanceId}", (jsonStr) =>
+        {
+            GameLobby lobby = JsonConvert.DeserializeObject<GameLobby>(jsonStr);
+
+            onComplete(lobby);
+        }, onError);
     }
 
     public enum WebRequestType
@@ -198,19 +209,17 @@ public class PlayerNetworkManager : NetworkManager
         Post
     }
 
-    private IEnumerator SendWebRequest(string endpoint, Action<string> onSuccess, Action onError)
+    public void SendWebRequest(string endpoint, Action<string> onSuccess, Action onError)
     {
-        Debug.Log("Bap");
-        yield return SendWebRequest(WebRequestType.Get, $"http://{BACKEND_IP}:{BACKEND_PORT}", endpoint, onSuccess, onError, null);
+        StartCoroutine(Task_SendWebRequest(WebRequestType.Get, $"http://{BACKEND_IP}:{BACKEND_PORT}", endpoint, onSuccess, onError, null));
     }
 
-    private IEnumerator SendWebRequest(string endpoint, Action<string> onSuccess, Action onError, string jsonStr)
+    public void SendWebRequest(string endpoint, Action<string> onSuccess, Action onError, string jsonStr)
     {
-        Debug.Log("Bop");
-        yield return SendWebRequest(WebRequestType.Post, $"http://{BACKEND_IP}:{BACKEND_PORT}", endpoint, onSuccess, onError, jsonStr);
+        StartCoroutine(Task_SendWebRequest(WebRequestType.Post, $"http://{BACKEND_IP}:{BACKEND_PORT}", endpoint, onSuccess, onError, jsonStr));
     }
 
-    private IEnumerator SendWebRequest(WebRequestType type, string url, string endpoint, Action<string> onSuccess, Action onError, string jsonStr)
+    private IEnumerator Task_SendWebRequest(WebRequestType type, string url, string endpoint, Action<string> onSuccess, Action onError, string jsonStr)
     {
         string fullUrl = $"{url}/{endpoint}";
         UnityWebRequest www = null;
@@ -242,5 +251,16 @@ public class PlayerNetworkManager : NetworkManager
                     break;
                 }
         }
+    }
+
+    public void Queue(string sceneName)
+    {
+        SendWebRequest("game", (jsonStr) =>
+        {
+
+        }, () =>
+        {
+
+        }, "");
     }
 }
