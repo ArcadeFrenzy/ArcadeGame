@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
     public int playerId;
     public bool client;
 
+    public string gameQueuedFor;
     public TextMeshPro UsernameText;
 
     // Start is called before the first frame update

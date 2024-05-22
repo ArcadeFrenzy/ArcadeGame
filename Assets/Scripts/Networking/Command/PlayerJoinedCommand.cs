@@ -14,7 +14,7 @@ public sealed class PlayerJoinedCommand : Command
 
     public override void Process()
     {
-        NetworkManager.Instance.networkedScene.OnPlayerJoin(this.playerId, this.playerName, this.playerPos);
+        NetworkManager.Instance.NetworkedScene.OnPlayerJoin(this.playerId, this.playerName, this.playerPos);
     }
 
     protected override void Decode(BinaryReader reader)

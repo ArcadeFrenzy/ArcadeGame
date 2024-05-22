@@ -10,7 +10,7 @@ public sealed class PlayerLeftCommand : Command
 
     public override void Process()
     {
-        NetworkManager.Instance.networkedScene.OnPlayerLeave(this.playerId);
+        NetworkManager.Instance.NetworkedScene.OnPlayerLeave(this.playerId);
     }
 
     protected override void Decode(BinaryReader reader)

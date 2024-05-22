@@ -12,13 +12,13 @@ public sealed class Commands
     public const ushort KEEP_ALIVE_OK = 3;
 
     // Lobby / Game
-    public const ushort LOBBY_QUEUE = 2;
-    public const ushort GAME_START = 3;
-
     public const ushort PLAYER_JOIN = 4;
     public const ushort PLAYER_LEAVE = 5;
     public const ushort PLAYER_LOBBY_MOVE = 6;
     public const ushort PLAYER_LIST = 7;
+
+    public const ushort LOBBY_QUEUE = 8;
+    public const ushort GAME_START = 9;
 
     // Pong
     public const ushort PONG_MOVE = 10;

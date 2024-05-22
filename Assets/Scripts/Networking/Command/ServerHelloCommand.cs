@@ -23,6 +23,6 @@ public sealed class ServerHelloCommand : Command
         NetworkManager.Instance.playerId = this.playerId;
         AuthManager.Instance.LoginCanvasObj.SetActive(false);
 
-        NetworkManager.Instance.networkedScene.OnLocalPlayerJoin();
+        NetworkManager.Instance.NetworkedScene.OnLocalPlayerJoin();
     }
 }

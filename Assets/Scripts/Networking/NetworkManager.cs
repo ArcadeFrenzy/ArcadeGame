@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
@@ -14,7 +13,21 @@ public class NetworkManager : MonoBehaviour
     public ushort port;
 
     public int playerId;
-    public NetworkedScene networkedScene;
+
+    public NetworkedScene NetworkedScene // Each scene must have a networked scene script attached to a game object (can be any game object)
+    {
+        get
+        {
+            NetworkedScene scene = FindObjectOfType<NetworkedScene>();
+
+            if(scene == null)
+            {
+                Debug.LogError("Failed to find a NetworkedScene script instance in the Scene.");
+            }
+
+            return scene;
+        }
+    }
 
     private Queue<Command> commandsToExecuteOnMainThread = new Queue<Command>();
 
@@ -28,6 +41,7 @@ public class NetworkManager : MonoBehaviour
         if(Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
             Commands.RegisterAllCommands();
 
             return;

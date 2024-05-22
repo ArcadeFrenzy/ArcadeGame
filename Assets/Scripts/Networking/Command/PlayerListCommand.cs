@@ -22,7 +22,7 @@ public sealed class PlayerListCommand : Command
     {
         foreach(var player in this.entries)
         {
-            NetworkManager.Instance.networkedScene.OnPlayerJoin(player.playerId, player.playerName, player.playerPos);
+            NetworkManager.Instance.NetworkedScene.OnPlayerJoin(player.playerId, player.playerName, player.playerPos);
         }
     }
 
