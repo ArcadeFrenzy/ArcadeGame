@@ -23,6 +23,11 @@ public class PlayerManager : MonoBehaviour
         this.players.Add(player.playerId, player);
     }
 
+    public void RemovePlayer(Player player)
+    {
+        this.players.Remove(player.playerId);
+    }
+
     public Player GetPlayer(int playerId)
     {
         return players[playerId];

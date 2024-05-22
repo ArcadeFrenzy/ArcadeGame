@@ -54,6 +54,13 @@ public class NetworkManager : MonoBehaviour
         }).Start();
 
         Debug.Log("Connected");
+
+        InvokeRepeating("SendKeepAlive", 15.0f, 15.0f);
+    }
+
+    private void SendKeepAlive()
+    {
+        SendCommand(new KeepAliveCommand());
     }
 
     public void SendCommand(Command command)

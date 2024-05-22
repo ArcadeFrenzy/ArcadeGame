@@ -24,4 +24,12 @@ public class LobbyNetworkedScene : NetworkedScene
 
         PlayerManager.Instance.AddPlayer(RemotePlayerObj.GetComponent<Player>());
     }
+
+    public override void OnPlayerLeave(int playerId)
+    {
+        Player player = PlayerManager.Instance.GetPlayer(playerId);
+        Destroy(player.gameObject);
+
+        PlayerManager.Instance.RemovePlayer(player);
+    }
 }
