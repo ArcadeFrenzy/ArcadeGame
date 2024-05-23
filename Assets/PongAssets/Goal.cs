@@ -13,12 +13,12 @@ public class Goal : MonoBehaviour
             if (isPlayer1Goal)
             {
                 Debug.Log("Player 2 Scored...");
-                GameObject.Find("GameManager").GetComponent<GameManager>().Player2Scored();
+                GameObject.Find("GameManager").GetComponent<PongGameManager>().Player2Scored();
             }
             else
             {
                 Debug.Log("Player 1 Scored...");
-                GameObject.Find("GameManager").GetComponent<GameManager>().Player1Scored();
+                GameObject.Find("GameManager").GetComponent<PongGameManager>().Player1Scored();
             }
         }
     }

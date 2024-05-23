@@ -19,6 +19,7 @@ public sealed class Commands
 
     public const ushort LOBBY_QUEUE = 8;
     public const ushort GAME_START = 9;
+    public const ushort PLAYER_READY = 10;
 
     // Pong
     public const ushort PONG_MOVE = 10;

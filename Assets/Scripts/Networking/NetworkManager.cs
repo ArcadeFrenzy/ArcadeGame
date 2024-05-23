@@ -59,6 +59,8 @@ public class NetworkManager : MonoBehaviour
     public void Connect()
     {
         this.client = new TcpClient(ipAddress, port);
+        this.client.NoDelay = true;
+
         this.writer = new BinaryWriter(this.client.GetStream());
         this.reader = new BinaryReader(this.client.GetStream());
 
