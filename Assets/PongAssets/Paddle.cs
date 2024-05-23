@@ -7,6 +7,8 @@ public class Paddle : MonoBehaviour
     public Rigidbody2D rb;
     public Vector3 startPosition;
     private float movement;
+
+    public bool client;
     
     // Start is called before the first frame update
     void Start()
