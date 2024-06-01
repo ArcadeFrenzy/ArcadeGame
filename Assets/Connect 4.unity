@@ -352,9 +352,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1079772340}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f225e348da68c79408c7814d93ea37c2, type: 3}
+  m_Script: {fileID: 11500000, guid: 853db63ce85899d438d3603872471758, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  numRows: 6
+  numCols: 7
+  numToWin: 4
+  allowDiag: 1
+  dropTime: 4
+  pieceRed: {fileID: 8681996253377797206, guid: bf5c5d6d96e94c443ae656525c7ab348, type: 3}
+  pieceYellow: {fileID: 2167766771839836229, guid: 2f441b1e26103e04a8334a75bf80c46c, type: 3}
+  pieceField: {fileID: 2188617402826581736, guid: beb68de19e820424cab0d01437a192d1, type: 3}
+  winningText: {fileID: 807125410}
+  playerWonText: You Won
+  playerLoseText: You Lose
+  drawText: Draw
+  playAgainButton: {fileID: 1843875412}
 --- !u!4 &1079772342
 Transform:
   m_ObjectHideFlags: 0
@@ -472,7 +485,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1297563579}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18f9c47e4b2a3a04bb5bc15ae7fc3cc2, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f09cce158a97b64497d15d36c0d1541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1843875412
