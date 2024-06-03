@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4549160284466850646}
   - component: {fileID: 4139308914635252229}
   - component: {fileID: 5185104936381806187}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: redPiece
   m_TagString: Untagged
   m_Icon: {fileID: 0}

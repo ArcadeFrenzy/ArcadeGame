@@ -278,8 +278,24 @@ namespace ConnectFour
                 //start dropping, must change to player two logic
                 else
                 {
-                    if (!isDropping)
+                    //makes counter follow mouse position, but clamps between x boundaries
+                    Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    gameObjectTurn.transform.position = new Vector3(Mathf.Clamp(pos.x, 0, numCols - 1),
+                        gameObjectField.transform.position.y + 1, 0);
+
+                    //if left mouse is pressed while it is not already
+                    //and the counter is not already dropping, then drop counter
+                    if (Input.GetMouseButtonDown(0) && !mouseButtonPressed && !isDropping)
+                    {
+                        mouseButtonPressed = true;
+
                         StartCoroutine(dropPiece(gameObjectTurn));
+                    }
+
+                    else
+                    {
+                        mouseButtonPressed = false;
+                    }
                 }
             }
         }
