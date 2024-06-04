@@ -259,7 +259,6 @@ GameObject:
   m_Component:
   - component: {fileID: 530272447}
   - component: {fileID: 530272446}
-  - component: {fileID: 530272448}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -287,6 +286,8 @@ MonoBehaviour:
   Player1Text: {fileID: 1590240975}
   Player2Text: {fileID: 1799365874}
   scoreLimit: 5
+  Player1Score: 0
+  Player2Score: 0
 --- !u!4 &530272447
 Transform:
   m_ObjectHideFlags: 0
@@ -302,18 +303,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &530272448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 530272445}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13b790948dfd5eb4c8f820949cdb9e1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &577011103
 GameObject:
   m_ObjectHideFlags: 0
@@ -583,6 +572,7 @@ MonoBehaviour:
   speed: 5
   rb: {fileID: 1211096539}
   startPosition: {x: 0, y: 0, z: 0}
+  client: 0
 --- !u!50 &1211096539
 Rigidbody2D:
   serializedVersion: 4
@@ -1770,6 +1760,7 @@ MonoBehaviour:
   speed: 5
   rb: {fileID: 2082105207}
   startPosition: {x: 0, y: 0, z: 0}
+  client: 0
 --- !u!50 &2082105207
 Rigidbody2D:
   serializedVersion: 4

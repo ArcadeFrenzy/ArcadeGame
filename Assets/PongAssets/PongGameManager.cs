@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class PongGameManager : GameManager
+public class PongGameManager : MonoBehaviour
 {
     [Header("Ball")]
     public GameObject ball;
@@ -20,36 +20,8 @@ public class PongGameManager : GameManager
 
     public int scoreLimit = 5;
 
-    private int Player1Score;
-    private int Player2Score;
-
-    protected override void Awake()
-    {
-        base.Awake();
-
-        this.ball.SetActive(false);
-        this.player1Paddle.SetActive(false);
-        this.player1Goal.SetActive(false);
-
-        this.player2Paddle.SetActive(false);
-        this.player2Goal.SetActive(false);
-
-        this.Player1Text.SetActive(false);
-        this.Player2Text.SetActive(false);
-    }
-
-    public override void OnGameStart()
-    {
-        ball.SetActive(true);
-        player1Paddle.SetActive(true);
-        player1Goal.SetActive(true);
-
-        player2Paddle.SetActive(true);
-        player2Goal.SetActive(true);
-
-        Player1Text.SetActive(true);
-        Player2Text.SetActive(true);
-    }
+    public int Player1Score;
+    public int Player2Score;
 
     public void Player1Scored()
     {
