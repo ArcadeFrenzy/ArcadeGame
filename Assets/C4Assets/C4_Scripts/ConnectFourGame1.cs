@@ -73,9 +73,17 @@ namespace ConnectFour
         bool gameOver = false;
         bool isCheckingForWinner = false;
 
+        //server communication
+        private ServerCommunication serverCommunication;
+
         //method is called when the game is started
         private void Start()
         {
+
+            // initialize server communication
+            serverCommunication = gameObject.AddComponent<ServerCommunication>();
+            serverCommunication.ConnectToServer("127.0.0.1", 8080); // Replace with your server IP and port
+
             //checks if pieces to win is bigger than available tiles
             int max = Mathf.Max(numRows, numCols);
 
@@ -92,6 +100,9 @@ namespace ConnectFour
 
             //store colour of "play again" button
             playAgainButtonOrigColour = playAgainButton.GetComponent<Renderer>().material.color;
+
+            // Start listening for opponent's move
+            StartCoroutine(ListenForOpponentMove());
         }
 
         //creates a new game field
@@ -374,6 +385,22 @@ namespace ConnectFour
             isDropping = false;
 
             yield return 0;
+        }
+
+        private IEnumerator ListenForOpponentMove()
+        {
+            yield return serverCommunication.ReceiveMove((player, column) =>
+            {
+                if (player != (isPlayerOne ? 1 : 2))
+                {
+                    GameObject gObject = Instantiate(
+                        player == 1 ? pieceYellow : pieceRed,
+                        new Vector3(column, 0, 0),
+                        Quaternion.identity) as GameObject;
+
+                    StartCoroutine(dropPiece(gObject));
+                }
+            });
         }
 
         IEnumerator Won()
