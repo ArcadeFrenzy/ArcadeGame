@@ -1,17 +1,24 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    public static PlayerManager Instance;
+    private static PlayerManager _instance;
 
-    private Dictionary<int, Player> players = new Dictionary<int, Player>();
+    public string username;
+
+    public static PlayerManager Instance
+    {
+        get
+        {
+            return _instance;
+        }
+    }
 
     private void Awake()
     {
-        if(Instance == null)
+        if(_instance == null)
         {
-            Instance = this;
+            _instance = this;
             DontDestroyOnLoad(gameObject);
             return;
         }
@@ -19,18 +26,15 @@ public class PlayerManager : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void AddPlayer(Player player)
+    // Start is called before the first frame update
+    void Start()
     {
-        this.players.Add(player.playerId, player);
+        
     }
 
-    public void RemovePlayer(Player player)
+    // Update is called once per frame
+    void Update()
     {
-        this.players.Remove(player.playerId);
-    }
-
-    public Player GetPlayer(int playerId)
-    {
-        return players[playerId];
+        
     }
 }

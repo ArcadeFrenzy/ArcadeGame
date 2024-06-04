@@ -3,10 +3,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public int playerId;
-    public bool client;
-
-    public string gameQueuedFor;
     public TextMeshPro UsernameText;
 
     // Start is called before the first frame update
@@ -17,15 +13,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (client)
-        {
-            Vector3 pos = this.transform.position;
+        Vector3 pos = this.transform.position;
 
-            if (MoveUpdate(ref pos))
-            {
-                this.transform.position = pos;
-                NetworkManager.Instance.SendCommand(new SetPositionCommand(pos));
-            }
+        if (MoveUpdate(ref pos))
+        {
+            this.transform.position = pos;
         }
     }
 

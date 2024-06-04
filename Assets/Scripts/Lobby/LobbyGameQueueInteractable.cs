@@ -1,19 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public sealed class LobbyGameQueueInteractable : MonoBehaviour
 {
-    public string gameName;
+    public string sceneName;
 
     private void OnTriggerEnter(Collider other)
     {
         Player player = other.gameObject.GetComponent<Player>();
-
-        if (player == null || !player.client || player.gameQueuedFor == this.gameName)
-        {
-            return;
-        }
-
-        player.gameQueuedFor = this.gameName;
-        NetworkManager.Instance.SendCommand(new GameQueueCommand(this.gameName));
+        SceneManager.LoadScene(this.sceneName);
     }
 }
