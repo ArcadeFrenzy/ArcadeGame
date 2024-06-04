@@ -8,6 +8,8 @@ public class TurnScript : MonoBehaviour
     GameObject gameBoard;
     public Sprite[] images;
     public bool unplayed = true;
+    public int row;
+    public int col;
 
     private void Start()
     {
@@ -21,9 +23,9 @@ public class TurnScript : MonoBehaviour
             int index = gameBoard.GetComponent<GameScript>().PlayerTurn();
             spriteRenderer.sprite = images[index];
             unplayed = false;
+            gameBoard.GetComponent<GameScript>().MakeMove(row, col, index);
         }
     }
-
 
     private void Awake()
     {

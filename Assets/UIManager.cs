@@ -15,11 +15,11 @@ public class UIManager : MonoBehaviour
 
     public void ShowWinScreen(string winner)
     {
-        winText.text = winner + " Wins!";
+        winText.text = winner;
         winPanel.SetActive(true); // Show the win panel
     }
 
-    void RestartGame()
+    public void RestartGame()
     {
         // Assuming you have a script named GameScript attached to another GameObject
         GameScript gameScript = FindObjectOfType<GameScript>();
