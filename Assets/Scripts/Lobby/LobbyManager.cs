@@ -7,6 +7,14 @@ public class LobbyManager : MonoBehaviour
     public GameObject LoginCanvas;
     public GameObject PlayerPrefab;
 
+    void Awake()
+    {
+        if(PlayerManager.Instance != null && !string.IsNullOrEmpty(PlayerManager.Instance.username))
+        {
+            this.Login();
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TetrisBlock : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class TetrisBlock : MonoBehaviour
     public static int height = 20;
     public static int width = 10;
     private static Transform[,] grid = new Transform[width, height];
+    private static bool playing = true;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +22,9 @@ public class TetrisBlock : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!playing)
+            return;
+
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             transform.position += new Vector3(-1, 0, 0);
@@ -47,7 +52,9 @@ public class TetrisBlock : MonoBehaviour
 
         if (Time.time - previousTime > (Input.GetKey(KeyCode.DownArrow) ? fallTime / 10 : fallTime))
         {
+            Vector3 currentPos = transform.position;
             transform.position += new Vector3(0, -1, 0);
+
             if (!ValidMove())
             {
                 transform.position -= new Vector3(0, -1, 0);
@@ -56,6 +63,13 @@ public class TetrisBlock : MonoBehaviour
                 this.enabled = false;
                 FindObjectOfType<SpawnTetromino>().NewTetromino();
             }
+
+            if(transform.position == currentPos && currentPos.y >= height - 3)
+            {
+                playing = false;
+                StartCoroutine(LoadLobbyScene());
+            }
+
             previousTime = Time.time;
         }
     }
@@ -140,5 +154,11 @@ public class TetrisBlock : MonoBehaviour
         }
 
         return true;
+    }
+
+    private IEnumerator LoadLobbyScene()
+    {
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene("Lobby");
     }
 }
