@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class HangmanController : MonoBehaviour
 {
@@ -99,7 +100,7 @@ public class HangmanController : MonoBehaviour
             {
                 wordBox.GetComponentsInChildren<TextMeshProUGUI>()[i].color = Color.green;
             }
-            Invoke("InitialiseGame", 3f);
+            StartCoroutine(LoadLobbyScene());
         }
         if(incorrectGuesses == hangmanStages.Length) //lose
         {
@@ -108,7 +109,13 @@ public class HangmanController : MonoBehaviour
                 wordBox.GetComponentsInChildren<TextMeshProUGUI>()[i].color = Color.red;
                 wordBox.GetComponentsInChildren<TextMeshProUGUI>()[i].text = word[i].ToString();
             }
-            Invoke("InitialiseGame", 3f);
+            StartCoroutine(LoadLobbyScene());
         }
+    }
+
+    private IEnumerator LoadLobbyScene()
+    {
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene("Lobby");
     }
 }
