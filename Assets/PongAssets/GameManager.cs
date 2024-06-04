@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -63,5 +64,12 @@ public class GameManager : MonoBehaviour
     private void EndGame(string winner)
     {
         Debug.Log(winner + " wins the game!");
+        StartCoroutine(LoadLobbyScene());
+    }
+
+    private IEnumerator LoadLobbyScene()
+    {
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene("Lobby");
     }
 }
