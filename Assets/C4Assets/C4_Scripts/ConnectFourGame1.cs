@@ -51,6 +51,13 @@ namespace ConnectFour
         Color playAgainButtonOrigColour;
         Color playAgainButtonHoverColour = new Color(255, 143, 4);
 
+        //quit button GameObject
+        public GameObject quitButton;
+        bool quitButtonTouching = false;
+        Color quitButtonOrigColour;
+        Color quitButtonHoverColour = new Color(255, 143, 4);
+
+
         //parent object for game field objects
         GameObject gameObjectField;
 
@@ -73,16 +80,9 @@ namespace ConnectFour
         bool gameOver = false;
         bool isCheckingForWinner = false;
 
-        //server communication
-        private ServerCommunication serverCommunication;
-
         //method is called when the game is started
         private void Start()
         {
-
-            // initialize server communication
-            serverCommunication = gameObject.AddComponent<ServerCommunication>();
-            serverCommunication.ConnectToServer("127.0.0.1", 8080); // Replace with your server IP and port
 
             //checks if pieces to win is bigger than available tiles
             int max = Mathf.Max(numRows, numCols);
@@ -101,8 +101,8 @@ namespace ConnectFour
             //store colour of "play again" button
             playAgainButtonOrigColour = playAgainButton.GetComponent<Renderer>().material.color;
 
-            // Start listening for opponent's move
-            StartCoroutine(ListenForOpponentMove());
+            //store colour of "quit" button
+            quitButtonOrigColour = quitButton.GetComponent<Renderer>().material.color;
         }
 
         //creates a new game field
@@ -111,6 +111,7 @@ namespace ConnectFour
             //hides winning text and play again button
             winningText.SetActive(false);
             playAgainButton.SetActive(false);
+            quitButton.SetActive(false);
 
             isLoading = true;
 
@@ -149,6 +150,8 @@ namespace ConnectFour
             winningText.transform.position = new Vector3((numCols - 1) / 2.0f, -((numRows - 1) / 2.0f) + 1, winningText.transform.position.z);
 
             playAgainButton.transform.position = new Vector3((numCols - 1) / 2.0f, -((numRows - 1) / 2.0f) - 1, playAgainButton.transform.position.z);
+
+            quitButton.transform.position = new Vector3((numCols - 1) / 2.0f, -((numRows - 1) / 2.0f) - 2, quitButton.transform.position.z);
         }
 
         //controls spawning pieces and switching player turns
@@ -219,6 +222,41 @@ namespace ConnectFour
             }
         }
 
+        //updates play again button if pressed
+        void UpdateQuitButton()
+        {
+            RaycastHit hit;
+
+            //creates ray at mouse position
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            //if mouse is hovering over the play again button, change the colour
+            if (Physics.Raycast(ray, out hit) && hit.collider.name == quitButton.name)
+            {
+                quitButton.GetComponent<Renderer>().material.color = quitButtonHoverColour;
+
+                //if left mouse is clicked while hovering, reload the game
+                if (Input.GetMouseButtonDown(0) || Input.touchCount > 0 && quitButtonTouching == false)
+                {
+                    quitButtonTouching = true;
+
+                    SceneManager.LoadScene("Lobby");
+                }
+
+            }
+
+            //if mouse is removed change colour back
+            else
+            {
+                quitButton.GetComponent<Renderer>().material.color = quitButtonOrigColour;
+            }
+
+            if (Input.touchCount == 0)
+            {
+                quitButtonTouching = false;
+            }
+        }
+
         void Update()
         {
 
@@ -235,8 +273,10 @@ namespace ConnectFour
             {
                 winningText.SetActive(true);
                 playAgainButton.SetActive(true);
+                quitButton.SetActive(true);
 
                 UpdatePlayAgainButton();
+                UpdateQuitButton();
 
                 return;
             }
@@ -385,22 +425,6 @@ namespace ConnectFour
             isDropping = false;
 
             yield return 0;
-        }
-
-        private IEnumerator ListenForOpponentMove()
-        {
-            yield return serverCommunication.ReceiveMove((player, column) =>
-            {
-                if (player != (isPlayerOne ? 1 : 2))
-                {
-                    GameObject gObject = Instantiate(
-                        player == 1 ? pieceYellow : pieceRed,
-                        new Vector3(column, 0, 0),
-                        Quaternion.identity) as GameObject;
-
-                    StartCoroutine(dropPiece(gObject));
-                }
-            });
         }
 
         IEnumerator Won()
