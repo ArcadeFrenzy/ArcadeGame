@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] GameObject winPanel;
@@ -21,15 +22,6 @@ public class UIManager : MonoBehaviour
 
     public void RestartGame()
     {
-        // Assuming you have a script named GameScript attached to another GameObject
-        GameScript gameScript = FindObjectOfType<GameScript>();
-        if (gameScript != null)
-        {
-            gameScript.ResetGame(); // Call the ResetGame function from GameScript
-        }
-        else
-        {
-            Debug.LogError("GameScript not found! Cannot reset the game.");
-        }
+        SceneManager.LoadScene("Lobby");
     }
 }

@@ -46,16 +46,4 @@ public class GameScript : MonoBehaviour
 
         return false;
     }
-
-    public void ResetGame()
-    {
-        spriteIndex = -1;
-        int[,] board = new int[3, 3]; // Reset the board state
-
-        foreach (TurnScript turnScript in GetComponentsInChildren<TurnScript>())
-        {
-            turnScript.unplayed = true;
-            turnScript.spriteRenderer.sprite = null;
-        }
-    }
 }
