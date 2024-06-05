@@ -2353,9 +2353,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Restart
-
-'
+  m_text: Go to Lobby
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2526,7 +2524,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1968928215}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8fd92db0288cd94a955be74ac4a8ad0, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ba32339f22093e41bd89dd9f2d9eb8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1990919224
