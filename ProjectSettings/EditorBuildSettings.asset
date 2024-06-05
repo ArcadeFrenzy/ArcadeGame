@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Connect 4.unity
     guid: 862c1748f0a92bb4597527c4187841e0
+  - enabled: 1
+    path: Assets/Scenes/TicTacToe.unity
+    guid: d6222045f65078f4e8cfafebdad4c8cd
   m_configObjects: {}
